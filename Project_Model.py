@@ -19,6 +19,44 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
 
+#Place holders for velocity terms
+LeakVelocity = 1 #[m/s]
+SeepVelocity = 10 #[m/s]
+VentVelocity = 100 #[m/s]
+
+#Reactivity Constants including placeholders [1/m]
+XeReactivity = 0
+CsReactivity = np.log(50)
+BaReactivity = np.log(40)
+LaReactivity = np.log(30)
+CeReactivity = np.log(20)
+
+#placeholder time value
+t = 1
+#Reactivity Decay Terms : exp([1/m]*[m/s]*[s])
+RD_Xe_Leak = np.exp(XeReactivity*LeakVelocity*t)
+RD_Xe_Seep = np.exp(XeReactivity*SeepVelocity*t)
+RD_Xe_Vent = np.exp(XeReactivity*VentVelocity*t)
+
+RD_Cs_Leak = np.exp(CsReactivity*LeakVelocity*t)
+RD_Cs_Seep = np.exp(CsReactivity*SeepVelocity*t)
+RD_Cs_Vent = np.exp(CsReactivity*VentVelocity*t)
+
+RD_Ba_Leak = np.exp(BaReactivity*LeakVelocity*t)
+RD_Ba_Seep = np.exp(BaReactivity*SeepVelocity*t)
+RD_Ba_Vent = np.exp(BaReactivity*VentVelocity*t)
+
+RD_La_Leak = np.exp(LaReactivity*LeakVelocity*t)
+RD_La_Seep = np.exp(LaReactivity*SeepVelocity*t)
+RD_La_Vent = np.exp(LaReactivity*VentVelocity*t)
+
+RD_Ce_Leak = np.exp(CeReactivity*LeakVelocity*t)
+RD_Ce_Seep = np.exp(CeReactivity*SeepVelocity*t)
+RD_Ce_Vent = np.exp(CeReactivity*VentVelocity*t)
+
+#timespan adjusts the time for which the model will examine, also affects frames in gif
+timespan = 1000 # [s]
+
 
 HL_XE = 14 # Half-life of Xe-140, [s]
 HL_CS = 64 # Half-life of Cs-140, [s]
@@ -54,15 +92,16 @@ COEFF = np.array(coefficients)
 
 
 ## Compute Radionuclide Density
+## NN[0] is the starting amounts of each radionuclide
 NN = [[1,0,0,0,0]]
 T = 0
-for i in range(0,100):
+for i in range(0,int(timespan/2)):
     row = []
     T += 2 # Increment time, [s]
     for j in range(0,5):
         SUMM = 0
         for k in range(0,j+1):
-            SUMM += COEFF[j][k]*np.exp((-1)*LL[k]*T)
+            SUMM += COEFF[j][k]*np.exp((-1)*LL[k]*T) #this is where we would multiply by the relevant reactivity decay term
         if j < 4:
             row.append(NN[0][0]*SUMM/LL[j])
     row.append((NN[i-1][4]+LL[3]*(row[3]-NN[i-1][3])))    
@@ -83,28 +122,26 @@ for x in NN:
   
 NN = np.array(NN)
 
-time = [*range(0,201,2)]
-# =============================================================================
-# plt.figure()
-# 
-# plt.plot(time,Xe,label = 'Xe-140')
-# 
-# plt.plot(time,Cs,label = 'Cs-140')
-# 
-# plt.plot(time,Ba,label = 'Ba-140')
-# 
-# plt.plot(time,La,label = 'La-140')
-# 
-# plt.plot(time,Ce,label = 'Ce-140')
-# 
-# plt.yscale('log')
-# plt.xlabel('Time, [s]')
-# plt.ylabel('Nuclear Density, [# of nuclei/cm^3]')
-# plt.title('Nuclear Density of Xe-140 Daughter Products')
-# plt.legend()
-# plt.grid()
-# plt.savefig('Model_Graph.png')
-# =============================================================================
+time = [*range(0,timespan+1,2)]
+plt.figure()
+
+plt.plot(time,Xe,label = 'Xe-140')
+
+plt.plot(time,Cs,label = 'Cs-140')
+
+plt.plot(time,Ba,label = 'Ba-140')
+
+plt.plot(time,La,label = 'La-140')
+
+plt.plot(time,Ce,label = 'Ce-140')
+
+plt.yscale('log')
+plt.xlabel('Time, [s]')
+plt.ylabel('Nuclear Density, [# of nuclei/cm^3]')
+plt.title('Nuclear Density of Xe-140 Daughter Products')
+plt.legend()
+plt.grid()
+plt.savefig('Model_Graph.png')
 
 # create the scatter plot.
 fig, ax = plt.subplots()
@@ -123,7 +160,7 @@ plt.ylabel('Nuclear Density, [# of nuclei/cm^3]')
 plt.title('Nuclear Density of Xe-140 Daughter Products')
 plt.grid()
 legend = plt.legend()
-plt.xlim(0,200)
+plt.xlim(0,timespan)
 
 lineXe, = ax.plot(time[0:2],Xe[0:2],label = 'Xe-140', c = 'g')
 lineCs, = ax.plot(time[0:2],Cs[0:2],label = 'Cs-140', c = 'c')
@@ -138,16 +175,7 @@ def update(i):
     # Update the axes (with a new xlabel). Return a tuple of
     # "artists" that have to be redrawn for this frame.
     ax.set_xlabel(label)
-    
-#    ax.plot(time[0:i+1],Xe[0:i+1],label = 'Xe-140', c = 'g')
-#    
-#    ax.plot(time[0:i+1],Cs[0:i+1],label = 'Cs-140', c = 'c')
-#    
-#    ax.plot(time[0:i+1],Ba[0:i+1],label = 'Ba-140', c = 'b')
-#    
-#    ax.plot(time[0:i+1],La[0:i+1],label = 'La-140', c = 'r')
-#    
-#    ax.plot(time[0:i+1],Ce[0:i+1],label = 'Ce-140', c = 'm')
+
     plt.legend()
     lineXe.set_xdata(time[0:i+1])
     lineXe.set_ydata(Xe[0:i+1])
@@ -159,15 +187,12 @@ def update(i):
     lineLa.set_ydata(La[0:i+1])
     lineCe.set_xdata(time[0:i+1])
     lineCe.set_ydata(Ce[0:i+1])
-# =============================================================================
-# line.set_xdata(x[0:i])    
-# line.set_ydata(y_values(x[0:i],a,b))
-# =============================================================================
+
     return lineXe,lineCs,lineBa,lineLa,lineCe,ax
 
 # Create an animation object from the created figure that includes
 
-anim = FuncAnimation(fig, update, frames=len(Xe)+1, interval=100, repeat_delay = 5000)
+anim = FuncAnimation(fig, update, frames=len(Xe)+1, interval=100, repeat_delay = 10000)
 
 # save a gif of the animation using the writing package from magick
 anim.save('Model_Gif.gif', dpi=72, writer='imagemagick')
