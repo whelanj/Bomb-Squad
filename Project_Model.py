@@ -93,7 +93,8 @@ COEFF = np.array(coefficients)
 
 ## Compute Radionuclide Density
 ## NN[0] is the starting amounts of each radionuclide
-NN = [[1,0,0,0,0]]
+Initial_amount_fission_product = 1
+NN = [[Initial_amount_fission_product,0,0,0,0]]
 T = 0
 for i in range(0,int(timespan/2)):
     row = []
