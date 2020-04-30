@@ -18,7 +18,10 @@ Created on Wed Apr 22 16:06:27 2020
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
+import math
 
+def orderOfMagnitude(number):
+    return math.floor(math.log(number, 10))
 '''
 The main inputs are timespan and reaction magnitude. Placeholders that will
     need to be determined by experimental data are the Velocity terms
@@ -162,7 +165,7 @@ plt.plot(time,La,label = 'La-140',c = 'r')
 
 plt.plot(time,Ce,label = 'Ce-140',c = 'm')
 
-#plt.ylim(bottom = 1e16)
+plt.ylim(bottom = 10**(orderOfMagnitude(Xe[-1])-1))
 #plt.ylim(top = 1e24)
 
 plt.yscale('log')
@@ -222,7 +225,7 @@ def update(i):
 
 # Create an animation object from the created figure that includes
 
-anim = FuncAnimation(fig, update, frames=len(Xe)+1, interval=100, repeat_delay = 10000)
+anim = FuncAnimation(fig, update, frames=len(Xe)+1, interval=(50*200/timespan), repeat_delay = 10000)
 
 # save a gif of the animation using the writing package from magick
 anim.save('Model_Gif_Reactivities_{}s.gif'.format(str(timespan)), dpi=72, writer='imagemagick')
