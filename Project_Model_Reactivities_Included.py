@@ -27,7 +27,7 @@ The main inputs are timespan and reaction magnitude. Placeholders that will
     if the new decay chain has more elements than the Xe-140 Chain.
 '''
 #timespan adjusts the time for which the model will examine, also affects frames in gif
-timespan = 200 # [s]
+timespan = 1000 # [s]
 # Starting Input aka Reaction Magnitude - This computes the number of starting Xe-140 atoms
 ReactionMagnitude = 1 #Kt
 
@@ -171,7 +171,7 @@ plt.ylabel('Nuclear Density, [# of nuclei/cm^3]')
 plt.title('Nuclear Density of Xe-140 Daughter Products from a {} kT Bomb'.format(ReactionMagnitude))
 plt.legend()
 plt.grid()
-plt.savefig('Model_Graph_Reactivities_200s.png')
+plt.savefig('Model_Graph_Reactivities_{}s.png'.format(str(timespan)))
 
 # create the scatter plot.
 fig, ax = plt.subplots()
@@ -225,4 +225,4 @@ def update(i):
 anim = FuncAnimation(fig, update, frames=len(Xe)+1, interval=100, repeat_delay = 10000)
 
 # save a gif of the animation using the writing package from magick
-anim.save('Model_Gif_Reactivities_200s.gif', dpi=72, writer='imagemagick')
+anim.save('Model_Gif_Reactivities_{}s.gif'.format(str(timespan)), dpi=72, writer='imagemagick')
